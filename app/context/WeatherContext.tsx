@@ -5,14 +5,29 @@ import {createContext, ReactNode, useEffect, useState} from "react";
 import {getWeather} from "@/app/services/weatheApi";
 
 interface WeatherData {
-    current: {
-        temp: number;
-        humidity: number;
-        pressure: number;
-        wind_speed: number;
-        weather: { description: string; icon: string; }[]
+    city: {
+        name: string,
+        country: string
     }
-    daily: { temp: { min: number; max: number }; weather: { description: string; icon: string; }[]; }[]
+    list: {
+        dt: number,
+        dt_txt: string,
+        main: {
+            temp: number
+            temp_min: number
+            temp_max: number
+            humidity: number
+            pressure: number
+        }
+        weather: {
+            description: string
+            icon: string
+        }[];
+        wind:{
+            deg:number
+            speed:number
+        }
+    }
 }
 
 interface WeatherContextType {
@@ -31,12 +46,12 @@ export const WeatherProvider = ({children}: { children: ReactNode }) => {
     const [error, setError] = useState<string | null>(null);
 
 
-    const fetchWeather = async (lat: number, lon: number) => {
+    const fetchWeather = async (lat: number | string, lon?: number | null) => {
 
         try {
             setLoading(true);
             setError(null);
-            const data = await getWeather(lat, lon);
+            const data = await getWeather(lat, lon??null);
 
             setWeatherData(data)
 
@@ -45,10 +60,41 @@ export const WeatherProvider = ({children}: { children: ReactNode }) => {
         } finally {
             setLoading(false)
         }
-
     }
-    useEffect(() => {
-        fetchWeather(33.44, -94.04)
+    // const fetchWeatherCity = async (city: string) => {
+    //
+    //     try {
+    //         setLoading(true);
+    //         setError(null);
+    //         const data = await getWeatherCity(city);
+    //
+    //         setWeatherData(data)
+    //
+    //     } catch (error) {
+    //         setError("error", error.message)
+    //     } finally {
+    //         setLoading(false)
+    //     }
+    // }
+
+
+    // useEffect(() => {
+    //     fetchWeather(33.44, -94.04)
+    // }, []);
+
+    useEffect(  () => {
+               if (!navigator.geolocation) {
+                   alert('Ваш браузер не поддерживает геолокацию. Пожалуйста, обновите браузер.');
+               } else {
+                   console.log('1')
+                   navigator.geolocation.getCurrentPosition(  function(position) {
+                       if(!position){
+                           fetchWeather(33.44, -94.04)
+                       }
+                       fetchWeather(position.coords.latitude, position.coords.longitude);
+                   });
+               }
+
     }, []);
 
     return (
