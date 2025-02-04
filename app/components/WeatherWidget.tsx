@@ -1,39 +1,26 @@
 'use client'
 import {useContext, useEffect, useState} from "react";
 import {WeatherContext} from "@/app/context/WeatherContext";
-import {jack} from "jackspeak";
 import WeatherWeek from "@/app/components/WeatherWeek";
 import WeatherCurrent from "@/app/components/WeatherCurrent";
 import WeatherForm from "@/app/components/WeatherForm";
-import WeatherCurrentMiddle from "@/app/components/WeatherCurrentMiddle";
+import {dataTime} from "@/app/utils/dateUtils";
 
 const WeatherWidget = () => {
-    const [lat, setLat] = useState("");
-    const [lon, setLon] = useState(-94.04);
+
+    const [latOrCity, setlatOrCity] = useState("");
     const [size, setSize] = useState("large");
 
+    const weatherContext = useContext(WeatherContext)
 
-    const weatherContext = useContext(WeatherContext);
-    if (!weatherContext) {
+    if(!weatherContext) {
         return <p>Error</p>
     }
-    const {weatherData, loading, error, fetchWeather} = weatherContext;
-    const toCelsius = (temp: number | undefined) => Math.round(((temp ?? 0) - 32) * 5 / 9);
+    const {weatherData, loading, error, fetchWeather, themeBlack, setThemeBlack} = weatherContext;
 
-    console.log(weatherData)
 
-    const dataTime = (checkPoint: number, showFulll = true) => {
-        const data = new Date(checkPoint * 1000)
-        return data.toLocaleString('en-En', showFulll ? {
-            weekday: 'long',
-            day: 'numeric',
-            month: 'long',
-            hour: '2-digit',
-            minute: '2-digit',
-        } : {
-            weekday: 'long',
-        });
-    }
+    // const toCelsius = (temp: number | undefined) => Math.round(( (temp ?? 0) - 32) * 5 / 9);
+
 
     const getDailyForecast = () => {
         if (!weatherData) return []
@@ -62,41 +49,43 @@ const WeatherWidget = () => {
         }))
     }
 
+    const dailyForecasts = getDailyForecast()
 
-    const dailyForecasts = getDailyForecast();
     return (
         <div>
             {loading ? (
-                <p>Loading...</p>
+                <p>Loading</p>
             ) : error ? (
                 <p>{error}</p>
-            ) : weatherData ? (
-                <div>
+            ): weatherData ? (
+                <div className={`${ themeBlack ? 'black' : "Light"  }  `} >
 
-                    <div>
-                        <select name="" value={size} onChange={(e) => setSize(e.target.value)} id="">
-                            <option value="large">Large</option>
-                            <option value="medium">Medium</option>
-                            <option value="small">Small</option>
-                        </select>
+                    <div className="py-2.5 bg-cyan-500 " >
+                    <div  className="container mx-auto">
+                        <WeatherForm latOrCity={latOrCity}  fetchWeather={fetchWeather} setlatOrCity={setlatOrCity}  themeBlack={themeBlack} setThemeBlack={setThemeBlack} />
+                    </div>
                     </div>
 
                     <div className="container mx-auto">
-                        <div className={`bg-sky-500/50 rounded-md  ${size === " small" ? "max-w-sm" : size === "medium" ? "max-w-md" : "max-w-lg"}  `}>
-                            <WeatherCurrent size={size} weatherData={weatherData} dataTime={dataTime} toCelsius={toCelsius}/>
-                            {size !== "small" &&  <WeatherWeek dailyForecasts={dailyForecasts} dataTime={dataTime} size={size}/> }
+                        <div>
+                            <select name="" value={size} onChange={(e) => setSize(e.target.value)} id="">
+                                <option value="large">Large</option>
+                                <option value="medium">Medium</option>
+                                <option value="small">Small</option>
+                            </select>
+                        </div>
+                        <div className={` bg-gradient-to-tl from-blue-500 to-teal-500 rounded-md  ${size === " small" ? "max-w-sm" : size === "medium" ? "max-w-md" : "max-w-lg"}  `}>
+                            <WeatherCurrent   size={size} weatherData={weatherData}/>
+                            {size !== "small" &&  <WeatherWeek dataTime={dataTime} size={size} dailyForecasts={dailyForecasts} /> }
 
                         </div>
                     </div>
-
-
-
                 </div>
-
-            ) : (
+            ): (
                 <p>No items</p>
             )}
-            <WeatherForm lat={lat} lon={lon} fetchWeather={fetchWeather} setLat={setLat} setLon={setLon}/>
+
+
         </div>
     );
 };

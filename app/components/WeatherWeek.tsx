@@ -2,10 +2,10 @@ import React from 'react';
 
 const WeatherWeek = ({dailyForecasts, dataTime, size}) => {
     return (
-        <div className={`flex flex-wrap ${size === "small" ? "gap-2 justify-center" : "gap-4"}`}>
+        <div className={`flex  ${size === "small" ? "gap-2 justify-center" : "gap-4"}`}>
 
             {dailyForecasts.slice(1).map((day, index) => (
-                <div key={index} className="border-2 border-l-indigo-500 border-t-indigo-500 rounded-xl ">
+                <div key={index} className="week-day  rounded-xl bg-gradient-to-br  from-cyan-500 to-blue-500">
                     {size === "small" ? (
                         <>
                             <p>{dataTime(day.dt, false)}</p>
@@ -16,8 +16,8 @@ const WeatherWeek = ({dailyForecasts, dataTime, size}) => {
                             <p> {dataTime(day.dt, false)} </p>
                             <img src={`https://openweathermap.org/img/wn/${day.icon}@2x.png`}
                                  alt=""/>
-                            <p>Desc : {day.description}</p>
-                            <p><span>{day.temp_min}</span> <span>|</span> <span>{day.temp_max}</span></p>
+                            <p> {day.description}</p>
+                            <p><span>{Math.round(day.temp_min)}</span> <span>|</span> <span>{Math.round(day.temp_max)}</span></p>
                         </>
                     )}
 

@@ -2,14 +2,17 @@ import React from 'react';
 
 
 // const WeatherForm = ({lat,fetchWeather,setLat,setLon, getWeatherCity}) => {
-    const WeatherForm = ({lat, setLat,  fetchWeather}) => {
+    const WeatherForm = ({latOrCity, setlatOrCity,  fetchWeather, themeBlack, setThemeBlack}) => {
     return (
-        <div>
-           <input type="text" value={lat} onChange={(e) => setLat(e.target.value)} placeholder={"Широта"} />
+        <div className="flex " >
+            <div className="" >
+                <input type="text" value={latOrCity} onChange={(e) => setlatOrCity(e.target.value)} placeholder={"City name"} />
+            </div>
 
-            {/*<input type="number" value={lon} onChange={(e) => setLon(parseFloat(e.target.value))}*/}
-            {/*       placeholder={"Долгота"} name="" id=""/>*/}
-            <button onClick={() => fetchWeather(lat)}>click</button>
+            <button onClick={() => fetchWeather(latOrCity)} className="align-middle block bg-amber-500 py-2 px-3 "  >click</button>
+
+            <button onClick={()=> themeBlack ? setThemeBlack(false)  :  setThemeBlack(true) } className="bg-amber-500 py-2 px-3 ml-1" > { themeBlack ? "Black" : "Light"} </button>
+
         </div>
     );
 };
